@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount, useReadContract } from "wagmi";
-import { formatEther, type Address } from "viem";
+import { formatEther, parseAbi, type Address } from "viem";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card";
@@ -18,16 +18,16 @@ type TokenSnapshot = {
   inPanic: boolean;
 };
 
-const vaultReadAbi = [
+const vaultReadAbi = parseAbi([
   "function getLockedTokens(address owner) view returns (uint256[])",
   "function getLockedRightsByWallet(address owner) view returns (uint256[])",
-] as const;
+]);
 
-const oracleReadAbi = ["function getFloorPrice(uint256 tokenId) view returns (uint256)"] as const;
-const loanGetLoanAbi = ["function getLoan(uint256 tokenId) view returns (uint256 debtAmount, bool inPanic)"] as const;
-const loanPositionsAbi = [
+const oracleReadAbi = parseAbi(["function getFloorPrice(uint256 tokenId) view returns (uint256)"]);
+const loanGetLoanAbi = parseAbi(["function getLoan(uint256 tokenId) view returns (uint256 debtAmount, bool inPanic)"]);
+const loanPositionsAbi = parseAbi([
   "function positions(uint256 tokenId) view returns (uint256 debt, bool inPanic, bool liquidated)",
-] as const;
+]);
 
 function MetricCard({ title, value, hint }: { title: string; value: string; hint: string }) {
   return (
