@@ -14,8 +14,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppNav />
+          {children}
+        </Providers>
       </body>
     </html>
   );
 }
+import '../app/globals.css';
+import AppNav from '../components/AppNav';
