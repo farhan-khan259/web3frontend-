@@ -1,42 +1,20 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, Source_Sans_3 } from "next/font/google";
-import "./globals.css";
-import dynamic from "next/dynamic";
-const Providers = dynamic(
-    () => import('./Providers.client').then(mod => mod.Providers),
-    { ssr: false }
-);
-import AppNav from "../components/AppNav";
-
-const headingFont = Space_Grotesk({
-    subsets: ["latin"],
-    variable: "--font-heading",
-    display: "swap",
-});
-
-const bodyFont = Source_Sans_3({
-    subsets: ["latin"],
-    variable: "--font-body",
-    display: "swap",
-});
+import type { Metadata } from 'next';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
-    title: "FARM RWA Dashboard",
-    description: "Real World Asset NAV Oracle Dashboard",
+    title: 'Gorilla Credit Engine',
+    description: 'NFT-backed lending protocol',
 };
 
 export default function RootLayout({
     children,
-}: Readonly<{
+}: {
     children: React.ReactNode;
-}>) {
+}) {
     return (
         <html lang="en">
-            <body className={`${headingFont.variable} ${bodyFont.variable}`}>
-                <Providers>
-                    <AppNav />
-                    {children}
-                </Providers>
+            <body>
+                <Providers>{children}</Providers>
             </body>
         </html>
     );

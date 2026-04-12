@@ -1,34 +1,31 @@
+export const dynamic = 'force-dynamic';
+
+import { useAccount } from 'wagmi';
 "use client";
 
-import "@rainbow-me/rainbowkit/styles.css";
+import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import { mainnet, sepolia, hardhat } from 'wagmi/chains';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '@rainbow-me/rainbowkit/styles.css';
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useEffect, useState } from "react";
-import { WagmiProvider } from "wagmi";
-import { config } from "../lib/wagmiConfig";
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
+if (!projectId) {
+    throw new Error('Missing NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID');
+}
 
-export default function Providers({ children }: { children: ReactNode }) {
-    const [queryClient] = useState(() => new QueryClient());
+const config = getDefaultConfig({
+    appName: 'Gorilla Credit Engine',
+    projectId,
+    chains: [mainnet, sepolia, hardhat],
+    ssr: false, // critical: disables server-side rendering for RainbowKit
+});
 
-    useEffect(() => {
-        const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-            const reason = String(event.reason ?? "");
+const queryClient = new QueryClient();
 
-            // Ignore extension-level MetaMask connection failures so they don't surface as app crashes.
-            if (reason.includes("Failed to connect to MetaMask")) {
-                event.preventDefault();
-            }
-        };
-
-        window.addEventListener("unhandledrejection", handleUnhandledRejection);
-        return () => {
-            window.removeEventListener("unhandledrejection", handleUnhandledRejection);
-        };
-    }, []);
-
+export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <WagmiProvider config={config} reconnectOnMount={false}>
+        <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider>
                     {children}
