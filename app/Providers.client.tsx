@@ -1,45 +1,28 @@
 "use client";
 
-import "@rainbow-me/rainbowkit/styles.css";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useEffect, useState } from "react";
-import { WagmiProvider } from "wagmi";
-import { config } from "../lib/wagmiConfig";
+import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import { mainnet, sepolia, hardhat } from 'wagmi/chains';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '@rainbow-me/rainbowkit/styles.css';
 
-export default function Providers({ children }: { children: ReactNode }) {
-    // Only render on client
-    if (typeof window === "undefined") return null;
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
+if (!projectId) {
+    throw new Error('Missing NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID');
+}
 
-    const [queryClient] = useState(() => new QueryClient());
+const config = getDefaultConfig({
+    appName: 'Gorilla Credit Engine',
+    projectId,
+    chains: [mainnet, sepolia, hardhat],
+    ssr: false, // Disable server-side rendering for RainbowKit
+});
 
-    useEffect(() => {
-        const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-            const reason = String(event.reason ?? "");
-            if (reason.includes("Failed to connect to MetaMask")) {
-                event.preventDefault();
-            }
-        };
-        window.addEventListener("unhandledrejection", handleUnhandledRejection);
-        return () => {
-            window.removeEventListener("unhandledrejection", handleUnhandledRejection);
-        };
-    }, []);
+const queryClient = new QueryClient();
 
-    // Runtime check for WalletConnect projectId
-    if (!process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID) {
-        if (typeof window !== "undefined") {
-            console.warn("NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID is missing");
-        }
-        return (
-            <div style={{color: 'red', padding: 16}}>
-                WalletConnect Project ID missing. Please set NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID in your environment variables.
-            </div>
-        );
-    }
-
+export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <WagmiProvider config={config} reconnectOnMount={false}>
+        <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider>
                     {children}

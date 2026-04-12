@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
-const Providers = dynamic(() => import("./Providers.client"), { ssr: false });
+const Providers = dynamic(
+    () => import('./Providers.client').then(mod => mod.Providers),
+    { ssr: false }
+);
 import AppNav from "../components/AppNav";
 
 const headingFont = Space_Grotesk({
