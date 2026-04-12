@@ -1,7 +1,4 @@
-export const dynamic = 'force-dynamic';
-
-import { useAccount } from 'wagmi';
-"use client";
+'use client';
 
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -11,49 +8,26 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 if (!projectId) {
-    throw new Error('Missing NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID');
+  throw new Error('Missing NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID');
 }
 
 const config = getDefaultConfig({
-    appName: 'Gorilla Credit Engine',
-    projectId,
-    chains: [mainnet, sepolia, hardhat],
-    ssr: false, // critical: disables server-side rendering for RainbowKit
+  appName: 'Gorilla Credit Engine',
+  projectId,
+  chains: [mainnet, sepolia, hardhat],
+  ssr: false,
 });
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
-    'use client';
-
-    import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
-    import { WagmiProvider } from 'wagmi';
-    import { mainnet, sepolia, hardhat } from 'wagmi/chains';
-    import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-    import '@rainbow-me/rainbowkit/styles.css';
-
-    const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
-    if (!projectId) {
-        throw new Error('Missing NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID');
-    }
-
-    const config = getDefaultConfig({
-        appName: 'Gorilla Credit Engine',
-        projectId,
-        chains: [mainnet, sepolia, hardhat],
-        ssr: false,
-    });
-
-    const queryClient = new QueryClient();
-
-    export function Providers({ children }: { children: React.ReactNode }) {
-        return (
-            <WagmiProvider config={config}>
-                <QueryClientProvider client={queryClient}>
-                    <RainbowKitProvider>
-                        {children}
-                    </RainbowKitProvider>
-                </QueryClientProvider>
-            </WagmiProvider>
-        );
-    }
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          {children}
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
